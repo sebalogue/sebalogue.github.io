@@ -1,0 +1,107 @@
+<!DOCTYPE html>	
+<html>
+<style>
+
+
+	body{
+		background-color:#CCCCCC;
+		font-family:arial;
+		font-size:16px;
+		
+	}
+
+	#container{
+	}
+
+	#svg{
+		background-image: url("s.png");	
+		border:1px solid black;
+        display: inline-block;
+		
+		
+	}
+
+	#info{
+        padding: 30px;
+        vertical-align: top;;       
+        min-width: 200px;;
+        
+		
+		border:1px solid black;
+        display: inline-block;
+	}
+    #container{
+        display: block;
+        text-align: center;
+    }
+</style>
+<script src="js/jquery.min.js"></script>
+
+<body>
+
+	
+    <div id="container">
+	<svg  id="svg" width="800" height="800" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" fill="transparent">
+	
+		  <!-- Dibuja una curva Bezier cubica -->
+		  <path d="M 229 428 C 246 428, 246 428, 246 428" stroke="red" fill="transparent"/>
+		
+		  <path d="M 246 428 C 270 630, 458 623, 499 594" stroke="red" fill="transparent"/>
+		  
+		  <path d="M 499 594 C 600 533, 589 435, 398 349" stroke="red" fill="transparent"/>
+
+		  <path d="M 398 349 C 160 234, 206 87, 299 17" stroke="red" fill="transparent"/>
+
+		  <path d="M 299 17 C 381 -35, 486 -2, 515 13" stroke="red" fill="transparent"/>
+
+		  <path d="M 515 13 C 559 31, 577 22, 582 -13" stroke="red" fill="transparent"/>
+
+		  <path d="M 582 -13 C 600 -13, 600 -13, 600 -13" stroke="red" fill="transparent"/>
+
+		  <path d="M 600 -13 C 599 204, 599 204, 599 204" stroke="red" fill="transparent"/>
+
+		  <path d="M 599 204 C 582 204, 582 204, 582 204" stroke="red" fill="transparent"/>
+			
+		  <path d="M 582 204 C 563 34, 448 23, 399 24" stroke="red" fill="transparent"/>
+	      
+	      <path d="M 399 24 C 300 34, 230 151, 400 235" stroke="red" fill="transparent"/>
+	      
+	      <path d="M 400 235 C 692 376, 637 460, 638 500" stroke="red" fill="transparent"/>
+
+	      <path d="M 638 500 C 622 599, 504 657, 399 641" stroke="red" fill="transparent"/>
+
+	      <path d="M 399 641 C 315 617, 292 600, 263 610" stroke="red" fill="transparent"/>
+
+	      <path d="M 263 610 C 247 616, 254 617, 246 643" stroke="red" fill="transparent"/>
+
+	      <path d="M 246 643 C 229 643, 229 643, 229 643" stroke="red" fill="transparent"/>
+
+	      <path d="M 229 643 C 229 428, 229 428, 229 428" stroke="red" fill="transparent"/>
+
+
+	</svg>	
+        <div id="info">
+        -
+        </div>
+        <br>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths">Referencia: SVG Paths<a/>
+    </div>
+	
+
+    
+        
+    <script>
+
+        $("#svg").mousemove(function(e){
+        
+            var x=e.pageX - 400 + 3;
+            var y=e.pageY - 100 - 10;
+            
+            $("#info").html("x:"+x+" y:"+y);
+        });
+
+    </script>
+
+</body>
+</html>
+
