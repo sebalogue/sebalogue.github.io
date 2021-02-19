@@ -1,9 +1,9 @@
 
-        // atributos del vértice (cada uno se alimenta de un ARRAY_BUFFER distinto)
+        // atributos del vertice (cada uno se alimenta de un ARRAY_BUFFER distinto)
 
-        attribute vec3 aPosition;   //posicion (x,y,z)
         attribute vec3 aNormal;     //vector normal (x,y,z)
         attribute vec2 aUv;         //coordenadas de texture (x,y)  x e y (en este caso) van de 0 a 1
+        attribute vec3 aPosition;   //posicion (x,y,z)
 
         // variables Uniform (son globales a todos los vértices y de solo-lectura)
 

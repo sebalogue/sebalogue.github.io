@@ -248,12 +248,22 @@
 
         function initShaders() {
     
-            var fragmentShader= getShader(gl, vertexShaderSource,"vertex");
-            var vertexShader= getShader(gl, fragmentShaderSource,"fragment");
+            var vertexShader= getShader(gl, vertexShaderSource,"vertex");
+            var fragmentShader= getShader(gl, fragmentShaderSource,"fragment");
 
             shaderProgram = gl.createProgram();
             gl.attachShader(shaderProgram, vertexShader);
             gl.attachShader(shaderProgram, fragmentShader);
+
+
+            gl.bindAttribLocation(shaderProgram, 0, "aPosition");
+            shaderProgram.vertexPositionAttribute = 0;
+            gl.bindAttribLocation(shaderProgram, 1, "aUv");
+            shaderProgram.textureCoordAttribute = 1;
+            gl.bindAttribLocation(shaderProgram, 2, "aNormal");
+            shaderProgram.vertexNormalAttribute = 2;
+
+
             gl.linkProgram(shaderProgram);
     
             if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
@@ -261,15 +271,19 @@
             }
     
             gl.useProgram(shaderProgram);
+
+            gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+            gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+            gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
     
-            shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aPosition");
+            /*shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aPosition");
             gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
     
             shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aUv");
             gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
     
             shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aNormal");
-            gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+            gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);*/
     
             shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
             shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
@@ -287,12 +301,22 @@
 
         function initTextureShaders() {
     
-            var fragmentShader= getShader(gl, textureVertexShaderSource,"vertex");
-            var vertexShader= getShader(gl, textureFragmentShaderSource,"fragment");
+            var vertexShader= getShader(gl, textureVertexShaderSource,"vertex");
+            var fragmentShader= getShader(gl, textureFragmentShaderSource,"fragment");
 
             shaderProgram = gl.createProgram();
             gl.attachShader(shaderProgram, vertexShader);
             gl.attachShader(shaderProgram, fragmentShader);
+
+
+            gl.bindAttribLocation(shaderProgram, 0, "aPosition");
+            shaderProgram.vertexPositionAttribute = 0;
+            gl.bindAttribLocation(shaderProgram, 1, "aUv");
+            shaderProgram.textureCoordAttribute = 1;
+            gl.bindAttribLocation(shaderProgram, 2, "aNormal");
+            shaderProgram.vertexNormalAttribute = 2;
+
+
             gl.linkProgram(shaderProgram);
     
             if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
@@ -300,15 +324,19 @@
             }
     
             gl.useProgram(shaderProgram);
+
+            gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+            gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+            gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
     
-            shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aPosition");
+            /*shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aPosition");
             gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
     
             shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aUv");
             gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
     
             shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aNormal");
-            gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+            gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);*/
     
             shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
             shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");

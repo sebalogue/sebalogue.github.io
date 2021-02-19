@@ -1,5 +1,5 @@
 
-        // atributos del vértice (cada uno se alimenta de un ARRAY_BUFFER distinto)
+        // atributos del vertice (cada uno se alimenta de un ARRAY_BUFFER distinto)
 
         attribute vec3 aPosition;   //posicion (x,y,z)
         attribute vec3 aNormal;     //vector normal (x,y,z)
