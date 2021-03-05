@@ -8,6 +8,7 @@ class Camara {
         this.yAnterior = 0;
         this.factorVelocidad = 0.01
         this.modoCamara = "orbital";
+        this.zoom = 0;
     }
 
     modoOrbital() {
@@ -24,6 +25,18 @@ class Camara {
 
     modoSuperior() {
         this.modoCamara = "superior";
+    }
+
+    aumentarZoom() {
+        if (this.zoom >= 0.01) {
+            this.zoom -= 0.01;
+        }
+    }
+
+    disminuirZoom() {
+        if (this.zoom <= 6) {
+            this.zoom += 0.01;
+        }
     }
 
     actualizar(matrizVista, mouse, isMouseDown, control) {
@@ -77,7 +90,7 @@ class Camara {
         var pos = control.getPosition();
         var vectorCentro = vec3.fromValues(pos.x, pos.y, pos.z);
 
-        var vectorOjo = vec3.fromValues(-0.1, 0.1, 0.1);
+        var vectorOjo = vec3.fromValues(-0.1 - this.zoom, 0.1, 0.1);
         vec3.add(vectorOjo, vectorCentro, vectorOjo);
 
         //vec3.rotateY(vectorOjo, vectorOjo, vectorCentro, control.getYaw());

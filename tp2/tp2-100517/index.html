@@ -21,6 +21,7 @@
     <script src="helipuerto.js"></script>
     <script src="baseHelipuerto.js"></script>
     <script src="texturaTerreno.js"></script>
+    <script src="agua.js"></script>
     <style>
         html{
             height: 100%;
@@ -60,6 +61,7 @@
         var vec3=glMatrix.vec3;   
         
         var earth;
+        var agua;
         var texturaTerreno = new TexturaTerreno();
             
         var $canvas=$("#myCanvas");
@@ -75,6 +77,8 @@
         var fragmentShaderSource;
         var textureVertexShaderSource;
         var textureFragmentShaderSource;
+        var aguaVertexShaderSource;
+        var aguaFragmentShaderSource;
 
         var matrizProyeccion = mat4.create();            
         var matrizVista = mat4.create();            
@@ -119,7 +123,13 @@
                     break;                                
                 case "4":
                     camara.modoSuperior();
-                    break;            
+                    break; 
+                case "+":
+                    camara.aumentarZoom();
+                    break;
+                case "-":
+                    camara.disminuirZoom();
+                    break;           
             }
         });
 
@@ -212,6 +222,31 @@
                     url: "shaders/texture-fragment-shader.glsl",
                     success: function(result){
                         textureFragmentShaderSource=result;
+                    }
+                });
+            }
+        }
+
+        function loadAguaShaders(){
+
+            $.when(loadVS(), loadFS()).done(function(res1,res2){
+                //this code is executed when all ajax calls are done     
+            });
+            
+            function loadVS() {
+                return  $.ajax({
+                    url: "shaders/agua-vertex-shader.glsl",
+                    success: function(result){
+                        aguaVertexShaderSource=result;
+                    }
+                });
+            }   
+
+            function loadFS() {
+                return  $.ajax({
+                    url: "shaders/agua-fragment-shader.glsl",
+                    success: function(result){
+                        aguaFragmentShaderSource=result;
                     }
                 });
             }
@@ -344,6 +379,45 @@
             shaderProgram.samplerUniform1 = gl.getUniformLocation(shaderProgram, "uSampler1");
             shaderProgram.samplerUniform2 = gl.getUniformLocation(shaderProgram, "uSampler2");            
         }
+
+        function initAguaShaders() {
+    
+            var vertexShader= getShader(gl, aguaVertexShaderSource,"vertex");
+            var fragmentShader= getShader(gl, aguaFragmentShaderSource,"fragment");
+
+            shaderProgram = gl.createProgram();
+            gl.attachShader(shaderProgram, vertexShader);
+            gl.attachShader(shaderProgram, fragmentShader);
+
+
+            gl.bindAttribLocation(shaderProgram, 0, "aPosition");
+            shaderProgram.vertexPositionAttribute = 0;
+            gl.bindAttribLocation(shaderProgram, 1, "aUv");
+            shaderProgram.textureCoordAttribute = 1;
+            gl.bindAttribLocation(shaderProgram, 2, "aNormal");
+            shaderProgram.vertexNormalAttribute = 2;
+
+
+            gl.linkProgram(shaderProgram);
+    
+            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                alert("Could not initialise shaders");
+            }
+    
+            gl.useProgram(shaderProgram);
+
+            gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+            gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+            gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+    
+            shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+            shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
+            shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
+            shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
+            shaderProgram.samplerUniformAgua = gl.getUniformLocation(shaderProgram, "uSamplerAgua");
+            shaderProgram.samplerUniformRef = gl.getUniformLocation(shaderProgram, "samplerRef");
+            shaderProgram.frameUniform = gl.getUniformLocation(shaderProgram, "time");
+        }
         
     
         function setMatrixUniforms() {
@@ -401,6 +475,13 @@
                 objetos3d[i].dibujar(identidad, shaderProgram.mMatrixUniform, shaderProgram.nMatrixUniform);
             }
 
+
+            initAguaShaders();
+            gl.uniform1f(shaderProgram.frameUniform, time/10.0 );
+            setMatrixUniforms();
+            var posHelicoptero = helicotero.obtenerPos();
+            agua.draw(shaderProgram.mMatrixUniform, shaderProgram.nMatrixUniform, posHelicoptero);
+            
             initTextureShaders();
             gl.uniform1f(shaderProgram.frameUniform, time/10.0 );
             gl.uniform3f(shaderProgram.ambientColorUniform, 0.5, 0.5, 0.5 );
@@ -415,8 +496,6 @@
             var posHelicoptero = helicotero.obtenerPos();
             texturaTerreno.draw();
             earth.draw(shaderProgram.mMatrixUniform, shaderProgram.nMatrixUniform, posHelicoptero);
-            //dibujarGeometria();
-
         }
         
         function tick() {
@@ -449,8 +528,12 @@
             earth = new Textura(15);
             earth.initBuffers();
             earth.initTexture("img/heightmap.png");
-
             texturaTerreno.initTextures();
+
+            agua = new Agua(15);
+            agua.initBuffers();
+            agua.initTexture("img/agua.jpg");
+            agua.initRefTexture("img/agua-ref.jpg");
 
             gl.clearColor(66.2, 0.2, 0.2, 1.0);
             gl.clear(gl.COLOR_BUFFER_BIT);
@@ -463,6 +546,7 @@
     
         // cuando el documento HTML esta completo, iniciamos la aplicación
         $(document).ready(function(){
+            loadAguaShaders();
             reloadTextureShaders();
             loadShaders();
         })

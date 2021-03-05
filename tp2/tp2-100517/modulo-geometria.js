@@ -122,19 +122,36 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
 
         var pos = this.getPosicion(u, v);
 
-        if (conTapa && (v == 0 || v == 1)) {
-            var a = this.getPosicion(u, 0);
-            var b = this.getPosicion(u, 1);
-            if (v == 1) {
+        if (conTapa && ((1 - v) <= 0.1 || v == 0)) {
+            var a = this.getPosicion(1, 0);
+            var b = this.getPosicion(1, 1);
+            if ((1 - v) <= 0.1 ) {
                 return [a[0] - b[0], a[1] - b[1],  a[2] - b[2]];
             }
             if (v == 0) {
-                return [ b[0] - a[0], b[1] - a[1],  b[2] - a[2]];
+                return [b[0] - a[0], b[1] - a[1],  b[2] - a[2]];
             }
-        }  
+        } 
+
+        if ((1 - u) <= 0.1) {
+            var centro = this.getPosicion(u - 0.1, v);
+            var a = this.getPosicion(u, v);
+            var b = this.getPosicion(u - 0.1, v + 0.1);
+            if ((1 - v) <= 0.1) {
+                b = this.getPosicion(u - 0.1, v - 0.1);
+            }
+
+            var resta_a = [a[0] - centro[0], a[1] - centro[1], a[2] - centro[2]];
+            var resta_b = [b[0] - centro[0], b[1] - centro[1], b[2] - centro[2]];
+            var result = this.productoVectorial(resta_a, resta_b);
+            return result;
+        }
 
         var a = this.getPosicion(u + 0.1, v);
         var b = this.getPosicion(u, v + 0.1);
+        if ((1 - v) <= 0.1) {
+            b = this.getPosicion(u, v - 0.1);
+        }
         var resta_a = [a[0] - pos[0], a[1] - pos[1], a[2] - pos[2]];
         var resta_b = [b[0] - pos[0], b[1] - pos[1], b[2] - pos[2]];
         var result = this.productoVectorial(resta_a, resta_b);
