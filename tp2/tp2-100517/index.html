@@ -479,7 +479,7 @@
 
             initAguaShaders();
             gl.uniform3f(shaderProgram.lightVec, 1.0, 1.0, 1.0);
-            gl.uniform1f(shaderProgram.frameUniform, time/10.0 );
+            gl.uniform1f(shaderProgram.frameUniform, time/4.0 );
             setMatrixUniforms();
             var posHelicoptero = helicotero.obtenerPos();
             agua.draw(shaderProgram.mMatrixUniform, shaderProgram.nMatrixUniform, posHelicoptero);

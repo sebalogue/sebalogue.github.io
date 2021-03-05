@@ -28,6 +28,7 @@ varying vec3 vNormal;
 varying vec2 vN;
 varying vec2 vUv;
 
+const float PI = 3.141529;
 
 void main(void) {
             
@@ -37,7 +38,10 @@ void main(void) {
 
     position.y += 1.5;
 
-    vec4 worldPos = uMMatrix*vec4(position, 1.0);                        
+    vec4 worldPos = uMMatrix*vec4(position, 1.0);
+
+    worldPos.y += (0.012 * sin(worldPos.x * 36.0 * PI + time * 28.0));
+    worldPos.y += (0.012 * sin(worldPos.z * 36.0 * PI + time * 28.0));
 
     gl_Position = uPMatrix * uVMatrix * worldPos;
 
