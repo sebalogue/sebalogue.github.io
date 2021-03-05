@@ -44,16 +44,13 @@ void main(void) {
     vWorldPosition=worldPos.xyz;              
     vNormal = normalize(uNMatrix*normal);
 
-    vec4 p = vec4(position, 1.0);
+    vec3 e = normalize(vec3(uVMatrix * worldPos));
 
-    vec3 e = normalize(vec3(uVMatrix * p));
-    vec3 n = normalize(uNMatrix * vNormal);
-
-    vec3 r = reflect(e, n);
+    vec3 r = reflect(e, vNormal);
     float m = 2.0 * sqrt(
         pow(r.x, 2.0) +
         pow(r.y, 2.0) +
-        pow(r.z + 1.0, 2.0)
+        pow(r.z, 2.0)
     );
     vN = r.xy / m + 0.5;
 

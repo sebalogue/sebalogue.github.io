@@ -417,6 +417,7 @@
             shaderProgram.samplerUniformAgua = gl.getUniformLocation(shaderProgram, "uSamplerAgua");
             shaderProgram.samplerUniformRef = gl.getUniformLocation(shaderProgram, "samplerRef");
             shaderProgram.frameUniform = gl.getUniformLocation(shaderProgram, "time");
+            shaderProgram.lightVec = gl.getUniformLocation(shaderProgram, "lightVec");
         }
         
     
@@ -477,6 +478,7 @@
 
 
             initAguaShaders();
+            gl.uniform3f(shaderProgram.lightVec, 1.0, 1.0, 1.0);
             gl.uniform1f(shaderProgram.frameUniform, time/10.0 );
             setMatrixUniforms();
             var posHelicoptero = helicotero.obtenerPos();
