@@ -19,11 +19,11 @@
 
         // texturas
         uniform bool useTexture;
-        uniform sampler2D uSamplerHelipuerto;
+        uniform sampler2D uSamplerH;
 
         void main(void) {
 
-            vec3 textureHelipuerto = texture2D(uSamplerHelipuerto, vUv).xyz;
+            vec3 textureH = texture2D(uSamplerH, vUv).xyz;
             
             vec3 lightDirection = normalize(uLightPosition - vec3(vWorldPosition));
             
@@ -35,7 +35,7 @@
             color.z *= RGB.z;
 
             if (useTexture) {
-                color = textureHelipuerto;
+                color = textureH;
             }
            
             if (uUseLighting) {

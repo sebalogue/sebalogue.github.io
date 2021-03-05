@@ -22,6 +22,7 @@
     <script src="baseHelipuerto.js"></script>
     <script src="texturaTerreno.js"></script>
     <script src="agua.js"></script>
+    <script src="cielo.js"></script>
     <style>
         html{
             height: 100%;
@@ -62,6 +63,7 @@
         
         var earth;
         var agua;
+        var cielo = new Cielo();
         var texturaTerreno = new TexturaTerreno();
             
         var $canvas=$("#myCanvas");
@@ -329,7 +331,7 @@
             shaderProgram.colorRgb = gl.getUniformLocation(shaderProgram, "RGB");
 
             shaderProgram.useTexture = gl.getUniformLocation(shaderProgram, "useTexture");
-            shaderProgram.uSamplerHelipuerto = gl.getUniformLocation(shaderProgram, "uSamplerHelipuerto");
+            shaderProgram.uSamplerHelipuerto = gl.getUniformLocation(shaderProgram, "uSamplerH");
 
         }
 
@@ -418,6 +420,8 @@
             shaderProgram.samplerUniformRef = gl.getUniformLocation(shaderProgram, "samplerRef");
             shaderProgram.frameUniform = gl.getUniformLocation(shaderProgram, "time");
             shaderProgram.lightVec = gl.getUniformLocation(shaderProgram, "lightVec");
+            shaderProgram.useTexture = gl.getUniformLocation(shaderProgram, "useTexture");
+            shaderProgram.uSamplerHelipuerto = gl.getUniformLocation(shaderProgram, "uSamplerH");
         }
         
     
@@ -522,6 +526,9 @@
             initTextureShaders();
             
             //crearGeometria();
+
+            cielo.crear(objetos3d);
+            cielo.initTexture("img/cielo1.jpg")
             
             helicotero.crearObjetos(objetos3d);
             helipuerto.crear(objetos3d);

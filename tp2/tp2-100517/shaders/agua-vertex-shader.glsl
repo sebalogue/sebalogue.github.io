@@ -38,16 +38,24 @@ void main(void) {
 
     position.y += 1.5;
 
+    // deriv x = (1, sin(x...), 0)
+    // deriv z = (0, sin(z...), 1)
+    //(sin(x) - 0, -1, sin(z))
+
     vec4 worldPos = uMMatrix*vec4(position, 1.0);
 
-    worldPos.y += (0.012 * sin(worldPos.x * 36.0 * PI + time * 28.0));
-    worldPos.y += (0.012 * sin(worldPos.z * 36.0 * PI + time * 28.0));
+    worldPos.y += (0.012 * sin(worldPos.x * 2.0 * PI + time * 14.0));
+    worldPos.y += (0.012 * sin(worldPos.z * 2.0 * PI + time * 14.0));
 
     gl_Position = uPMatrix * uVMatrix * worldPos;
 
     vWorldPosition=worldPos.xyz;              
-    vNormal = normalize(uNMatrix*normal);
+    //vNormal = normalize(uNMatrix*normal);
+    vNormal.x = - 0.012 * cos(worldPos.x * 2.0 * PI + time * 14.0) * 2.0 * PI;
+    vNormal.y = 1.0;
+    vNormal.z = - 0.012 * cos(worldPos.z * 2.0 * PI + time * 14.0) * 2.0 * PI;
 
+    //vNormal = normalize(vNormal);
     vec3 e = normalize(vec3(uVMatrix * worldPos));
 
     vec3 r = reflect(e, vNormal);
