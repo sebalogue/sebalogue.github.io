@@ -26,9 +26,9 @@
 
             vec2 uv_ = vUv;
             if (cabina) {
-                float factor = 0.69;
+                float factor = 0.64;
                 float offset = 0.75;
-                uv_.x = vWorldPosition.x*-factor + offset;
+                uv_.x = vWorldPosition.x*-factor - 0.6;
                 uv_.y = vWorldPosition.y*factor + offset;
             }
 
