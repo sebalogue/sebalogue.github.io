@@ -48,7 +48,8 @@ class TimonDeCola {
                                       filas, 
                                       columnas,
                                       null,
-                                      true);
+                                      true,
+                                      false);
 
         var mallaDeTriangulos = generarSuperficie(superficie, filas,columnas);
         timon.setGeometria(mallaDeTriangulos);

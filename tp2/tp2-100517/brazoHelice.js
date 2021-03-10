@@ -1,9 +1,10 @@
 class BrazoHelice {
 
-    constructor(helicoptero, posicion, rotacion, posicionHelices) {
+    constructor(helicoptero, posicion, rotacion, posicionHelices, rotCirculo = [0,0,0]) {
         this.posicion = posicion;
         this.rotacion = rotacion;
         this.circuloHelices = null;
+        this.rotCirculo = rotCirculo;
         this.objeto = new Objeto3D();
         this.esfera = new Objeto3D();
         var filas = 30;
@@ -58,7 +59,7 @@ class BrazoHelice {
     };
 
     agregarCirculoHelices(pos) {
-        var rot = [this.rotacion[0] , this.rotacion[1], this.rotacion[2]];
+        var rot = [this.rotacion[0] +this.rotCirculo[0], this.rotacion[1]+this.rotCirculo[1], this.rotacion[2]+this.rotCirculo[2]];
         this.circuloHelices = new CirculoHelices(this.objeto, pos, rot);
     }
 

@@ -49,17 +49,17 @@ class TexturaTerreno {
 		// https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/activeTexture
         gl.activeTexture(gl.TEXTURE1);
 		gl.bindTexture(gl.TEXTURE_2D, this.textures[0]);
-		gl.uniform1i(shaderProgram.samplerUniform0, 1);
+		gl.uniform1i(shaderProgramTerreno.samplerUniform0, 1);
 		
         gl.activeTexture(gl.TEXTURE2);
 		gl.bindTexture(gl.TEXTURE_2D, this.textures[1]);
-		gl.uniform1i(shaderProgram.samplerUniform1, 2);
+		gl.uniform1i(shaderProgramTerreno.samplerUniform1, 2);
 
 		gl.activeTexture(gl.TEXTURE3);
 		gl.bindTexture(gl.TEXTURE_2D, this.textures[2]);
-		gl.uniform1i(shaderProgram.samplerUniform2, 3);
+		gl.uniform1i(shaderProgramTerreno.samplerUniform2, 3);
 		
-		gl.uniform1f(gl.getUniformLocation(shaderProgram, "scale1"), this.scale1);
+		gl.uniform1f(gl.getUniformLocation(shaderProgramTerreno, "scale1"), this.scale1);
 		//gl.uniform1f(gl.getUniformLocation(shaderProgram, "low"), this.low);
 		//gl.uniform1f(gl.getUniformLocation(shaderProgram, "high"), this.high);
 

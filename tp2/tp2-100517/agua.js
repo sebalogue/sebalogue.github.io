@@ -65,7 +65,7 @@ class Agua {
 
             for (var j = 0; j < n; j += 1) {
                 
-                var parcela = new Parcela(i, j, ladoParcela, this.lado);
+                var parcela = new Parcela(i, j, ladoParcela, this.lado, shaderProgramAgua);
                 parcela.initBuffers();
                 this.parcelas.push(parcela);
             }
@@ -77,11 +77,11 @@ class Agua {
 
         gl.activeTexture(gl.TEXTURE5);
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
-        gl.uniform1i(shaderProgram.samplerUniformAgua, 5);
+        gl.uniform1i(shaderProgramAgua.samplerUniform, 5);
 
         gl.activeTexture(gl.TEXTURE6);
         gl.bindTexture(gl.TEXTURE_2D, this.refTexture);
-        gl.uniform1i(shaderProgram.samplerUniformRef, 6);
+        gl.uniform1i(shaderProgramAgua.samplerUniformRef, 6);
         
         // Para centrar parcelas y calcular dist con helicoptero
         var i = ((posicionHelicoptero[0] + this.lado/2) / this.lado) * this.n;

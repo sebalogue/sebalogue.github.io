@@ -10,7 +10,8 @@ class Helices {
             var objeto = new Objeto3D();
             var filas = 30;
             var columnas = 30;
-            var superficie = new Plano(0.15, 0.07);
+            //var superficie = new Plano(0.15, 0.07);
+            var superficie = new Plano(20.15, 3.07);
 
             var mallaDeTriangulos = generarSuperficie(superficie, filas,columnas);
             objeto.setGeometria(mallaDeTriangulos);

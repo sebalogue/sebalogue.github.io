@@ -27,6 +27,8 @@
         varying vec3 vNormal;
         varying vec2 vUv;
 
+        uniform bool cabina;
+
         // lighting
 
         varying highp vec3 vLighting;                       
@@ -53,7 +55,12 @@
 
             gl_Position = uPMatrix * uVMatrix * worldPos;
 
-            vWorldPosition=worldPos.xyz;              
+            if (cabina) {
+                vWorldPosition = aPosition;
+            } else {
+                vWorldPosition=worldPos.xyz;              
+            }
+            
             vNormal = normalize(uNMatrix*normal);
             vUv=uv;
 

@@ -8,7 +8,103 @@ class CirculoHelices {
         var filas = 30;
         var columnas = 30;
 
-        var superficie = new TuboSenoidal(0, 1, 0.15, 0.1); // amplitud_onda, longitud_onda, radio, altura
+        // con bezier
+
+        var puntosForma = [
+            [0, 1, 0],
+            [0.5519, 1, 0],
+            [1, 0.5519, 0],
+
+            [1, 0, 0],
+            [1, 0, 0],
+            [1, -0.5519, 0],
+
+            [0.5519, -1, 0],
+            [0, -1, 0],
+            [0, -1, 0],
+
+            [-0.5519, -1, 0],
+            [-1, -0.5519, 0],
+            [-1, 0, 0],
+
+            [-1, 0, 0],
+            [-1, 0.5519, 0],
+            [-0.5519, 1, 0],
+
+            [0, 1, 0]
+        ];
+        /*var puntosRecorrido =  [
+            [0, 0, 1],
+            [0.5519, 0, 1],
+            [1, 0, 0.5519],
+
+            [1, 0, 0],
+            [1, 0, 0],
+            [1, 0, -0.5519],
+
+            [0.5519, 0, -1],
+            [0, 0, -1],
+            [0, 0, -1],
+
+            [-0.5519, 0, -1],
+            [-1, 0, -0.5519],
+            [-1, 0, 0],
+
+            [-1, 0, 0],
+            [-1, 0, 0.5519],
+            [-0.5519, 0, 1],
+
+            [0, 0, 1],
+            //[0.5519, 0, 1]
+        ];*/
+        var m4 = 0.01104569499;
+        var puntosRecorrido = 
+         [
+             [0, 0, 0.02],
+             [m4, 0, 0.02],
+             [0.02, 0, m4],
+             [0.02, 0, 0],
+             [0.02, 0, 0],
+             [0.02, 0, -m4],
+             [m4, 0, -0.02],
+             [0, 0, -0.02],
+             [0, 0, -0.02],
+             [-m4, 0, -0.02],
+             [-0.02, 0, -m4],
+             [-0.02, 0, 0],
+             [-0.02, 0, 0],
+             [-0.02, 0, m4],
+             [-m4, 0, 0.02],
+             [0, 0, 0.02]
+            ]
+
+        for (var i = 0; i < puntosRecorrido.length; i++) {
+            for (var j = 0; j < 3; j++) {
+                puntosRecorrido[i][j] *= 10;
+            }
+        }
+
+        for (var i = 0; i < puntosForma.length; i++) {
+            for (var j = 0; j < 3; j++) {
+                puntosForma[i][j] /= 25;
+            }
+        }
+
+        var forma = new CurvaBezier(puntosForma);
+
+        var recorrido = new CurvaBezier(puntosRecorrido);
+
+        var superficie = new SuperficieBarrido(discretizadorDeCurvas(forma, columnas), 
+                                      discretizadorDeCurvas(recorrido, filas), 
+                                      discretizadorDeRecorrido(recorrido,filas), 
+                                      filas, 
+                                      columnas,
+                                      null,
+                                      false);
+
+        // con senoidal
+
+        //var superficie = new TuboSenoidal(0, 1, 0.15, 0.1); // amplitud_onda, longitud_onda, radio, altura
 
         var mallaDeTriangulosDelHelicotero = generarSuperficie(superficie, filas,columnas);
         this.objeto.setGeometria(mallaDeTriangulosDelHelicotero);
@@ -16,6 +112,7 @@ class CirculoHelices {
         this.objeto.setRotacion(this.rotacion[0], this.rotacion[1], this.rotacion[2]);
         this.objeto.setPosicion(this.posicion[0], this.posicion[1] , this.posicion[2]);
         this.objeto.setColor(0.1, 0.4, 0.1);
+        //this.objeto.setEscala(0.1, 0.1, 0.1);
         this.agregarTubo();
 
         helicoptero.agregarHijo(this.objeto);
@@ -24,7 +121,7 @@ class CirculoHelices {
     agregarTubo() {
         var filas = 30;
         var columnas = 30;
-
+        
         var superficie = new TuboSenoidal(0, 1, 0.01, 0.1); // amplitud_onda, longitud_onda, radio, altura
 
         var mallaDeTriangulosDelHelicotero = generarSuperficie(superficie, filas,columnas);
@@ -49,7 +146,7 @@ class CirculoHelices {
             helice.setRotacion(Math.PI/5 , this.rotacion[1] + i * Math.PI/5, 0);
             helice.setPosicion(0.08 , 0 , 0);
             helice.rotarPrimero();
-            helice.setColor(0, 0, 0.1);
+            helice.setColor(0.8, 0.2, 0.1);
 
             this.tubo.agregarHijo(helice);
         }

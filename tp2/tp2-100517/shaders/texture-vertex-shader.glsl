@@ -32,7 +32,7 @@
         // constantes
         
         const float PI=3.141592653;
-        const float epsilon=0.01;
+        const float epsilon=1.0/1024.0;
 
         const float amplitud=4.0;
 

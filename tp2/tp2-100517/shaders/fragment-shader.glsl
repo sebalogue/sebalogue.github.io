@@ -20,29 +20,60 @@
         // texturas
         uniform bool useTexture;
         uniform sampler2D uSamplerH;
+        uniform bool cabina;
 
         void main(void) {
 
-            vec3 textureH = texture2D(uSamplerH, vUv).xyz;
-            
-            vec3 lightDirection = normalize(uLightPosition - vec3(vWorldPosition));
-            
-            vec3 color = (uAmbientColor + uDirectionalColor * max(dot(vNormal,lightDirection), 0.0));
-           
+            vec2 uv_ = vUv;
+            if (cabina) {
+                float factor = 0.69;
+                float offset = 0.75;
+                uv_.x = vWorldPosition.x*-factor + offset;
+                uv_.y = vWorldPosition.y*factor + offset;
+            }
 
-            color.x *= RGB.x;
-            color.y *= RGB.y;
-            color.z *= RGB.z;
+            //------------
+            vec3 N = normalize(-vNormal);
+            vec3 L = normalize(uLightPosition - vWorldPosition);
+
+            // Lambert
+            float lambertian = max(dot(N, L), 0.0);
+
+            float specular = 0.0;
+            float shininessVal = 1.0;
+
+            if(lambertian > 0.0) {
+                vec3 R = reflect(-L, N);     
+                vec3 V = normalize(vWorldPosition);
+
+                // especular
+                float specAngle = max(dot(R, V), 0.0);
+                specular = pow(specAngle, shininessVal);
+            }
+
+            float Ka = 1.0;   // Ambiente
+            float Kd = 0.8;  // Difusion
+            float Ks = 1.0;   // Especular
+
+            vec3 diffuseColor = vec3(0.3, 0.3, 0.3);
+            vec3 specularColor = vec3(1.0, 1.0, 1.0);
+
+            vec3 color = Ka * uAmbientColor + Kd * lambertian * diffuseColor + Ks * specular * specularColor;
+
+            
 
             if (useTexture) {
-                color = textureH;
+                vec3 textureH = texture2D(uSamplerH, uv_).xyz;
+                //color = textureH;
+                color.x *= textureH.x;
+                color.y *= textureH.y;
+                color.z *= textureH.z;
+            } else {
+                color.x *= RGB.x;
+                color.y *= RGB.y;
+                color.z *= RGB.z;
             }
-           
-            if (uUseLighting) {
-                gl_FragColor = vec4(color, 1.0);
-            }
-            else {
-                gl_FragColor = vec4(1,1.0,0.7,1.0);
-            }
+
+            gl_FragColor = vec4(color, 1.0);
             
         }

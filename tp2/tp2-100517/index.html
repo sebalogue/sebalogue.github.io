@@ -53,7 +53,9 @@
 
         var vertexShaderFile="vertex-shader.glsl";
         var modo="smooth"; // wireframe, smooth, edges
-        var shaderProgram;
+        var shaderProgramObjetos;
+        var shaderProgramTerreno;
+        var shaderProgramAgua;
         var time=0;
 
         var gl;
@@ -81,6 +83,13 @@
         var textureFragmentShaderSource;
         var aguaVertexShaderSource;
         var aguaFragmentShaderSource;
+
+        var vertexShader;
+        var fragmentShader;
+        var earthVertexShader;
+        var earthFragmentShader;
+        var aguaVertexShader;
+        var aguaFragmentShader;
 
         var matrizProyeccion = mat4.create();            
         var matrizVista = mat4.create();            
@@ -289,143 +298,151 @@
 
         function initShaders() {
     
-            var vertexShader= getShader(gl, vertexShaderSource,"vertex");
-            var fragmentShader= getShader(gl, fragmentShaderSource,"fragment");
+            vertexShader= getShader(gl, vertexShaderSource,"vertex");
+            fragmentShader= getShader(gl, fragmentShaderSource,"fragment");
+        }
 
-            shaderProgram = gl.createProgram();
-            gl.attachShader(shaderProgram, vertexShader);
-            gl.attachShader(shaderProgram, fragmentShader);
-
-
-            gl.bindAttribLocation(shaderProgram, 0, "aPosition");
-            shaderProgram.vertexPositionAttribute = 0;
-            gl.bindAttribLocation(shaderProgram, 1, "aUv");
-            shaderProgram.textureCoordAttribute = 1;
-            gl.bindAttribLocation(shaderProgram, 2, "aNormal");
-            shaderProgram.vertexNormalAttribute = 2;
+        function activateShaders() {
+            shaderProgramObjetos = gl.createProgram();
+            gl.attachShader(shaderProgramObjetos, vertexShader);
+            gl.attachShader(shaderProgramObjetos, fragmentShader);
 
 
-            gl.linkProgram(shaderProgram);
+            gl.bindAttribLocation(shaderProgramObjetos, 0, "aPosition");
+            shaderProgramObjetos.vertexPositionAttribute = 0;
+            gl.bindAttribLocation(shaderProgramObjetos, 1, "aUv");
+            shaderProgramObjetos.textureCoordAttribute = 1;
+            gl.bindAttribLocation(shaderProgramObjetos, 2, "aNormal");
+            shaderProgramObjetos.vertexNormalAttribute = 2;
+
+
+            gl.linkProgram(shaderProgramObjetos);
     
-            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            if (!gl.getProgramParameter(shaderProgramObjetos, gl.LINK_STATUS)) {
                 alert("Could not initialise shaders");
             }
     
-            gl.useProgram(shaderProgram);
+            gl.useProgram(shaderProgramObjetos);
 
-            gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-            gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
-            gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+            gl.enableVertexAttribArray(shaderProgramObjetos.vertexPositionAttribute);
+            gl.enableVertexAttribArray(shaderProgramObjetos.textureCoordAttribute);
+            gl.enableVertexAttribArray(shaderProgramObjetos.vertexNormalAttribute);
 
     
-            shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-            shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
-            shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
-            shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
-            shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
-            shaderProgram.useLightingUniform = gl.getUniformLocation(shaderProgram, "uUseLighting");
-            shaderProgram.ambientColorUniform = gl.getUniformLocation(shaderProgram, "uAmbientColor");
-            shaderProgram.frameUniform = gl.getUniformLocation(shaderProgram, "time");
-            shaderProgram.lightingDirectionUniform = gl.getUniformLocation(shaderProgram, "uLightPosition");
-            shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, "uDirectionalColor");
-            shaderProgram.colorRgb = gl.getUniformLocation(shaderProgram, "RGB");
+            shaderProgramObjetos.pMatrixUniform = gl.getUniformLocation(shaderProgramObjetos, "uPMatrix");
+            shaderProgramObjetos.mMatrixUniform = gl.getUniformLocation(shaderProgramObjetos, "uMMatrix");
+            shaderProgramObjetos.vMatrixUniform = gl.getUniformLocation(shaderProgramObjetos, "uVMatrix");
+            shaderProgramObjetos.nMatrixUniform = gl.getUniformLocation(shaderProgramObjetos, "uNMatrix");
+            shaderProgramObjetos.samplerUniform = gl.getUniformLocation(shaderProgramObjetos, "uSampler");
+            shaderProgramObjetos.useLightingUniform = gl.getUniformLocation(shaderProgramObjetos, "uUseLighting");
+            shaderProgramObjetos.ambientColorUniform = gl.getUniformLocation(shaderProgramObjetos, "uAmbientColor");
+            shaderProgramObjetos.frameUniform = gl.getUniformLocation(shaderProgramObjetos, "time");
+            shaderProgramObjetos.lightingDirectionUniform = gl.getUniformLocation(shaderProgramObjetos, "uLightPosition");
+            shaderProgramObjetos.directionalColorUniform = gl.getUniformLocation(shaderProgramObjetos, "uDirectionalColor");
+            shaderProgramObjetos.colorRgb = gl.getUniformLocation(shaderProgramObjetos, "RGB");
 
-            shaderProgram.useTexture = gl.getUniformLocation(shaderProgram, "useTexture");
-            shaderProgram.uSamplerHelipuerto = gl.getUniformLocation(shaderProgram, "uSamplerH");
+            shaderProgramObjetos.useTexture = gl.getUniformLocation(shaderProgramObjetos, "useTexture");
+            shaderProgramObjetos.uSamplerHelipuerto = gl.getUniformLocation(shaderProgramObjetos, "uSamplerH");
 
         }
 
         function initTextureShaders() {
     
-            var vertexShader= getShader(gl, textureVertexShaderSource,"vertex");
-            var fragmentShader= getShader(gl, textureFragmentShaderSource,"fragment");
+            earthVertexShader= getShader(gl, textureVertexShaderSource,"vertex");
+            earthFragmentShader= getShader(gl, textureFragmentShaderSource,"fragment");
+        }
 
-            shaderProgram = gl.createProgram();
-            gl.attachShader(shaderProgram, vertexShader);
-            gl.attachShader(shaderProgram, fragmentShader);
+        function activateEarthShaders() {
 
-
-            gl.bindAttribLocation(shaderProgram, 0, "aPosition");
-            shaderProgram.vertexPositionAttribute = 0;
-            gl.bindAttribLocation(shaderProgram, 1, "aUv");
-            shaderProgram.textureCoordAttribute = 1;
-            gl.bindAttribLocation(shaderProgram, 2, "aNormal");
-            shaderProgram.vertexNormalAttribute = 2;
+            shaderProgramTerreno = gl.createProgram();
+            gl.attachShader(shaderProgramTerreno, earthVertexShader);
+            gl.attachShader(shaderProgramTerreno, earthFragmentShader);
 
 
-            gl.linkProgram(shaderProgram);
+            gl.bindAttribLocation(shaderProgramTerreno, 0, "aPosition");
+            shaderProgramTerreno.vertexPositionAttribute = 0;
+            gl.bindAttribLocation(shaderProgramTerreno, 1, "aUv");
+            shaderProgramTerreno.textureCoordAttribute = 1;
+            gl.bindAttribLocation(shaderProgramTerreno, 2, "aNormal");
+            shaderProgramTerreno.vertexNormalAttribute = 2;
+
+
+            gl.linkProgram(shaderProgramTerreno);
     
-            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            if (!gl.getProgramParameter(shaderProgramTerreno, gl.LINK_STATUS)) {
                 alert("Could not initialise shaders");
             }
     
-            gl.useProgram(shaderProgram);
+            gl.useProgram(shaderProgramTerreno);
 
-            gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-            gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
-            gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+            gl.enableVertexAttribArray(shaderProgramTerreno.vertexPositionAttribute);
+            gl.enableVertexAttribArray(shaderProgramTerreno.textureCoordAttribute);
+            gl.enableVertexAttribArray(shaderProgramTerreno.vertexNormalAttribute);
     
-            shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-            shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
-            shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
-            shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
-            shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
-            shaderProgram.useLightingUniform = gl.getUniformLocation(shaderProgram, "uUseLighting");
-            shaderProgram.ambientColorUniform = gl.getUniformLocation(shaderProgram, "uAmbientColor");
-            shaderProgram.frameUniform = gl.getUniformLocation(shaderProgram, "time");
-            shaderProgram.lightingDirectionUniform = gl.getUniformLocation(shaderProgram, "uLightPosition");
-            shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, "uDirectionalColor");
+            shaderProgramTerreno.pMatrixUniform = gl.getUniformLocation(shaderProgramTerreno, "uPMatrix");
+            shaderProgramTerreno.mMatrixUniform = gl.getUniformLocation(shaderProgramTerreno, "uMMatrix");
+            shaderProgramTerreno.vMatrixUniform = gl.getUniformLocation(shaderProgramTerreno, "uVMatrix");
+            shaderProgramTerreno.nMatrixUniform = gl.getUniformLocation(shaderProgramTerreno, "uNMatrix");
+            shaderProgramTerreno.samplerUniform = gl.getUniformLocation(shaderProgramTerreno, "uSampler");
+            shaderProgramTerreno.useLightingUniform = gl.getUniformLocation(shaderProgramTerreno, "uUseLighting");
+            shaderProgramTerreno.ambientColorUniform = gl.getUniformLocation(shaderProgramTerreno, "uAmbientColor");
+            shaderProgramTerreno.frameUniform = gl.getUniformLocation(shaderProgramTerreno, "time");
+            shaderProgramTerreno.lightingDirectionUniform = gl.getUniformLocation(shaderProgramTerreno, "uLightPosition");
+            shaderProgramTerreno.directionalColorUniform = gl.getUniformLocation(shaderProgramTerreno, "uDirectionalColor");
 
 
-            shaderProgram.samplerUniform0 = gl.getUniformLocation(shaderProgram, "uSampler0");
-            shaderProgram.samplerUniform1 = gl.getUniformLocation(shaderProgram, "uSampler1");
-            shaderProgram.samplerUniform2 = gl.getUniformLocation(shaderProgram, "uSampler2");            
+            shaderProgramTerreno.samplerUniform0 = gl.getUniformLocation(shaderProgramTerreno, "uSampler0");
+            shaderProgramTerreno.samplerUniform1 = gl.getUniformLocation(shaderProgramTerreno, "uSampler1");
+            shaderProgramTerreno.samplerUniform2 = gl.getUniformLocation(shaderProgramTerreno, "uSampler2");            
         }
 
         function initAguaShaders() {
     
-            var vertexShader= getShader(gl, aguaVertexShaderSource,"vertex");
-            var fragmentShader= getShader(gl, aguaFragmentShaderSource,"fragment");
+            aguaVertexShader= getShader(gl, aguaVertexShaderSource,"vertex");
+            aguaFragmentShader= getShader(gl, aguaFragmentShaderSource,"fragment");
+        }
 
-            shaderProgram = gl.createProgram();
-            gl.attachShader(shaderProgram, vertexShader);
-            gl.attachShader(shaderProgram, fragmentShader);
+        function activateAguaShaders() {
 
-
-            gl.bindAttribLocation(shaderProgram, 0, "aPosition");
-            shaderProgram.vertexPositionAttribute = 0;
-            gl.bindAttribLocation(shaderProgram, 1, "aUv");
-            shaderProgram.textureCoordAttribute = 1;
-            gl.bindAttribLocation(shaderProgram, 2, "aNormal");
-            shaderProgram.vertexNormalAttribute = 2;
+            shaderProgramAgua = gl.createProgram();
+            gl.attachShader(shaderProgramAgua, aguaVertexShader);
+            gl.attachShader(shaderProgramAgua, aguaFragmentShader);
 
 
-            gl.linkProgram(shaderProgram);
+            gl.bindAttribLocation(shaderProgramAgua, 0, "aPosition");
+            shaderProgramAgua.vertexPositionAttribute = 0;
+            gl.bindAttribLocation(shaderProgramAgua, 1, "aUv");
+            shaderProgramAgua.textureCoordAttribute = 1;
+            gl.bindAttribLocation(shaderProgramAgua, 2, "aNormal");
+            shaderProgramAgua.vertexNormalAttribute = 2;
+
+
+            gl.linkProgram(shaderProgramAgua);
     
-            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            if (!gl.getProgramParameter(shaderProgramAgua, gl.LINK_STATUS)) {
                 alert("Could not initialise shaders");
             }
     
-            gl.useProgram(shaderProgram);
+            gl.useProgram(shaderProgramAgua);
 
-            gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-            gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
-            gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+            gl.enableVertexAttribArray(shaderProgramAgua.vertexPositionAttribute);
+            gl.enableVertexAttribArray(shaderProgramAgua.textureCoordAttribute);
+            gl.enableVertexAttribArray(shaderProgramAgua.vertexNormalAttribute);
     
-            shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-            shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
-            shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
-            shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
-            shaderProgram.samplerUniformAgua = gl.getUniformLocation(shaderProgram, "uSamplerAgua");
-            shaderProgram.samplerUniformRef = gl.getUniformLocation(shaderProgram, "samplerRef");
-            shaderProgram.frameUniform = gl.getUniformLocation(shaderProgram, "time");
-            shaderProgram.lightVec = gl.getUniformLocation(shaderProgram, "lightVec");
-            shaderProgram.useTexture = gl.getUniformLocation(shaderProgram, "useTexture");
-            shaderProgram.uSamplerHelipuerto = gl.getUniformLocation(shaderProgram, "uSamplerH");
+            shaderProgramAgua.pMatrixUniform = gl.getUniformLocation(shaderProgramAgua, "uPMatrix");
+            shaderProgramAgua.mMatrixUniform = gl.getUniformLocation(shaderProgramAgua, "uMMatrix");
+            shaderProgramAgua.vMatrixUniform = gl.getUniformLocation(shaderProgramAgua, "uVMatrix");
+            shaderProgramAgua.nMatrixUniform = gl.getUniformLocation(shaderProgramAgua, "uNMatrix");
+            shaderProgramAgua.samplerUniform = gl.getUniformLocation(shaderProgramAgua, "uSamplerAgua");
+            shaderProgramAgua.samplerUniformRef = gl.getUniformLocation(shaderProgramAgua, "samplerRef");
+            shaderProgramAgua.frameUniform = gl.getUniformLocation(shaderProgramAgua, "time");
+            shaderProgramAgua.lightVec = gl.getUniformLocation(shaderProgramAgua, "lightVec");
+            shaderProgramAgua.useTexture = gl.getUniformLocation(shaderProgramAgua, "useTexture");
+            shaderProgramAgua.uSamplerHelipuerto = gl.getUniformLocation(shaderProgramAgua, "uSamplerH");
         }
         
     
-        function setMatrixUniforms() {
+        function setMatrixUniforms(shaderProgram) {
             
             //gl.uniformMatrix4fv(shaderProgram.mMatrixUniform, false, matrizModelado);
             gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, matrizVista);
@@ -462,46 +479,49 @@
             camara.actualizar(matrizVista, mouse, isMouseDown, controlHelicoptero); 
                       
 
-            initShaders();
+            //activateShaders();
+            gl.useProgram(shaderProgramObjetos);
 
-            gl.uniform1f(shaderProgram.frameUniform, time/10.0 );
-            gl.uniform3f(shaderProgram.ambientColorUniform, 0.2, 0.1, 0.1 );
-            gl.uniform3f(shaderProgram.directionalColorUniform, 1.0, 1.0, 1.0);
-            //gl.uniform3f(shaderProgram.directionalColorUniform2, 0.3, 0.3, 0.5);
-            gl.uniform1i(shaderProgram.useLightingUniform,(lighting=="true"));
-            var lightPosition = [0.0,1.0,0.0];  
+            gl.uniform1f(shaderProgramObjetos.frameUniform, time/10.0 );
+            gl.uniform3f(shaderProgramObjetos.ambientColorUniform, 0.5, 0.5, 0.5 );
+            gl.uniform3f(shaderProgramObjetos.directionalColorUniform, 1.0, 1.0, 1.0);
+            //gl.uniform3f(shaderProgramObjetos.directionalColorUniform2, 0.3, 0.3, 0.5);
+            gl.uniform1i(shaderProgramObjetos.useLightingUniform,(lighting=="true"));
+            var lightPosition = [-10.0,30.0,-20.0];  
             //var lightPosition2 = [-5.0,5.0, -10.0];  
-            gl.uniform3fv(shaderProgram.lightingDirectionUniform, lightPosition);            
-            //gl.uniform3fv(shaderProgram.lightingDirectionUniform2, lightPosition2);
+            gl.uniform3fv(shaderProgramObjetos.lightingDirectionUniform, lightPosition);            
+            //gl.uniform3fv(shaderProgramObjetos.lightingDirectionUniform2, lightPosition2);
 
-            setMatrixUniforms();
+            setMatrixUniforms(shaderProgramObjetos);
             var identidad = mat4.create();
             for (var i = 0; i < objetos3d.length; i++) {
-                objetos3d[i].dibujar(identidad, shaderProgram.mMatrixUniform, shaderProgram.nMatrixUniform);
+                objetos3d[i].dibujar(identidad, shaderProgramObjetos.mMatrixUniform, shaderProgramObjetos.nMatrixUniform);
             }
 
 
-            initAguaShaders();
-            gl.uniform3f(shaderProgram.lightVec, 1.0, 1.0, 1.0);
-            gl.uniform1f(shaderProgram.frameUniform, time/4.0 );
-            setMatrixUniforms();
+            //activateAguaShaders();
+            gl.useProgram(shaderProgramAgua);
+            gl.uniform3f(shaderProgramAgua.lightVec, 1.0, 1.0, 1.0);
+            gl.uniform1f(shaderProgramAgua.frameUniform, time/4.0 );
+            setMatrixUniforms(shaderProgramAgua);
             var posHelicoptero = helicotero.obtenerPos();
-            agua.draw(shaderProgram.mMatrixUniform, shaderProgram.nMatrixUniform, posHelicoptero);
+            agua.draw(shaderProgramAgua.mMatrixUniform, shaderProgramAgua.nMatrixUniform, posHelicoptero);
             
-            initTextureShaders();
-            gl.uniform1f(shaderProgram.frameUniform, time/10.0 );
-            gl.uniform3f(shaderProgram.ambientColorUniform, 0.5, 0.5, 0.5 );
-            gl.uniform3f(shaderProgram.directionalColorUniform, 0.6, 0.6, 0.6);
-            //gl.uniform3f(shaderProgram.directionalColorUniform2, 0.3, 0.3, 0.5);
-            gl.uniform1i(shaderProgram.useLightingUniform,(lighting=="true"));
-            var lightPosition = [1.0,0.0, 0.0];  
+            //activateEarthShaders();
+            gl.useProgram(shaderProgramTerreno);
+            gl.uniform1f(shaderProgramTerreno.frameUniform, time/10.0 );
+            gl.uniform3f(shaderProgramTerreno.ambientColorUniform, 0.6, 0.6, 0.6 );
+            gl.uniform3f(shaderProgramTerreno.directionalColorUniform, 1.0, 1.0, 1.0);
+            //gl.uniform3f(shaderProgramTerreno.directionalColorUniform2, 0.3, 0.3, 0.5);
+            gl.uniform1i(shaderProgramTerreno.useLightingUniform,(lighting=="true"));
+            var lightPosition = [50.0,0.0, -100.0];  
             //var lightPosition2 = [-5.0,5.0, -10.0];  
-            gl.uniform3fv(shaderProgram.lightingDirectionUniform, lightPosition);            
-            //gl.uniform3fv(shaderProgram.lightingDirectionUniform2, lightPosition2);
-            setMatrixUniforms();
+            gl.uniform3fv(shaderProgramTerreno.lightingDirectionUniform, lightPosition);            
+            //gl.uniform3fv(shaderProgramTerreno.lightingDirectionUniform2, lightPosition2);
+            setMatrixUniforms(shaderProgramTerreno);
             var posHelicoptero = helicotero.obtenerPos();
             texturaTerreno.draw();
-            earth.draw(shaderProgram.mMatrixUniform, shaderProgram.nMatrixUniform, posHelicoptero);
+            earth.draw(shaderProgramTerreno.mMatrixUniform, shaderProgramTerreno.nMatrixUniform, posHelicoptero);
         }
         
         function tick() {
@@ -524,6 +544,10 @@
             
             initShaders();
             initTextureShaders();
+            initAguaShaders();
+            activateShaders();
+            activateEarthShaders();
+            activateAguaShaders();
             
             //crearGeometria();
 
@@ -536,7 +560,7 @@
             baseHelipuerto.initTexture("img/helipad.png");
             earth = new Textura(15);
             earth.initBuffers();
-            earth.initTexture("img/heightmap.png");
+            earth.initTexture("img/heightmapblur.png");
             texturaTerreno.initTextures();
 
             agua = new Agua(15);

@@ -22,7 +22,7 @@ uniform sampler2D uSampler2;
 
 // Perlin Noise                     
             
-vec3 mod289(vec3 x)
+/*vec3 mod289(vec3 x)
 {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
 }
@@ -115,9 +115,32 @@ float cnoise(vec3 P)
   float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x); 
   return 2.2 * n_xyz;
 }
+*/
+float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+vec4 perm(vec4 x){return mod289(((x * 34.0) + 1.0) * x);}
 
+float cnoise(vec3 p){
+    vec3 a = floor(p);
+    vec3 d = p - a;
+    d = d * d * (3.0 - 2.0 * d);
 
+    vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
+    vec4 k1 = perm(b.xyxy);
+    vec4 k2 = perm(k1.xyxy + b.zzww);
 
+    vec4 c = k2 + a.zzzz;
+    vec4 k3 = perm(c);
+    vec4 k4 = perm(c + 1.0);
+
+    vec4 o1 = fract(k3 * (1.0 / 41.0));
+    vec4 o2 = fract(k4 * (1.0 / 41.0));
+
+    vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
+    vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
+
+    return o4.y * d.y + o4.x * (1.0 - d.y);
+}
 // ***************************************************************************
 
 
@@ -181,10 +204,39 @@ void main(void) {
    // combino color1 (tierra y rocas) con color2 a partir de la mascara2
    vec3 color=mix(color1,color2,mask2);
 
+   vec3 N = normalize(-vNormal);
+    vec3 L = normalize(uLightPosition - vWorldPosition);
 
-  vec3 lightDirection = (uLightPosition - vec3(vWorldPosition));
+    // Lambert
+    float lambertian = max(dot(N, L), 0.0);
+
+    float specular = 0.0;
+    float shininessVal = 1.0;
+
+    if(lambertian > 0.0) {
+        vec3 R = reflect(-L, N);     
+        vec3 V = normalize(-vWorldPosition);
+
+        // especular
+        float specAngle = max(dot(R, V), 0.0);
+        specular = pow(specAngle, shininessVal);
+    }
+
+    float Ka = 1.0;   // Ambiente
+    float Kd = 0.5;  // Difusion
+    float Ks = 1.0;   // Especular
+
+    vec3 diffuseColor = vec3(0.3, 0.6, 0.3);
+    vec3 specularColor = vec3(1.0, 1.0, 1.0);
+
+    vec3 colorlight = Ka * uAmbientColor + Kd * lambertian * diffuseColor + Ks * specular * specularColor;
+
             
-  vec3 colorlight= ( uAmbientColor + uDirectionalColor * max(dot(vNormal,lightDirection), 0.0) * 0.4);
+
+
+  //vec3 lightDirection = (uLightPosition - vec3(vWorldPosition));
+            
+  //vec3 colorlight= ( uAmbientColor + uDirectionalColor * max(dot(vNormal,lightDirection), 0.0) * 0.4);
 
   color.x *= colorlight.x;
   color.y *= colorlight.y;

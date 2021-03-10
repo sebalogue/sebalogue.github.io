@@ -1,7 +1,7 @@
 
 class Parcela {
 
-    constructor(i, j, lado, largoTotal) {
+    constructor(i, j, lado, largoTotal, shader = null) {
         this.i = i;
         this.j = j;
         this.lado = lado;
@@ -19,6 +19,10 @@ class Parcela {
         this.webgl_normal_buffer = null;
         this.webgl_texture_coord_buffer = null;
         this.webgl_index_buffer = null;
+        this.shaderProgram = shaderProgramTerreno;
+        if (shader) {
+            this.shaderProgram = shader;
+        }
     };
 
     initBuffers() {
@@ -118,27 +122,28 @@ class Parcela {
 
         // Se configuran los buffers que alimentaron el pipeline
         gl.bindBuffer(gl.ARRAY_BUFFER, this.webgl_position_buffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.webgl_position_buffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.webgl_position_buffer.itemSize, gl.FLOAT, false, 0, 0);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.webgl_texture_coord_buffer);
-        gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, this.webgl_texture_coord_buffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(this.shaderProgram.textureCoordAttribute, this.webgl_texture_coord_buffer.itemSize, gl.FLOAT, false, 0, 0);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.webgl_normal_buffer);
-        gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, this.webgl_normal_buffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, this.webgl_normal_buffer.itemSize, gl.FLOAT, false, 0, 0);
 
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.uniform1i(shaderProgram.samplerUniform, 0);
+        var su = (this.shaderProgram).samplerUniform;
+        gl.uniform1i(su, 0);
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.webgl_index_buffer);
 
         if (modo!="wireframe"){
-            gl.uniform1i(shaderProgram.useLightingUniform,(lighting=="true"));                    
+            gl.uniform1i(this.shaderProgram.useLightingUniform,(lighting=="true"));                    
             gl.drawElements(gl.TRIANGLES, this.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
         }
 
         if (modo!="smooth") {
-            gl.uniform1i(shaderProgram.useLightingUniform,false);
+            gl.uniform1i(this.shaderProgram.useLightingUniform,false);
             gl.drawElements(gl.LINE_STRIP, this.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
         }
 

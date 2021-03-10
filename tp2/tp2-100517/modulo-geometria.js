@@ -54,8 +54,10 @@ function escalar(v) {
     return [1,1,1];
 }
 
+var Epsilon = 0.02;
 
-function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, vertices, funcEscalar = null, conTapa = false) {
+
+function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, vertices, funcEscalar = null, conTapa = false, centrado = true) {
 
     this.verticePromedio=function(){
         var xMax = 0;
@@ -85,14 +87,6 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
         var vectorModelado = matricesModelado[Math.round(v*niveles)];
         var matrizNormal = matricesNormales[Math.round(v*niveles)];
 
-        if (!vectorModelado) {
-            vectorModelado = matricesModelado[Math.round((v-0.1) * niveles)]
-        }
-
-        if (!matrizNormal) {
-            matrizNormal = matricesNormales[Math.round((v-0.1) * niveles)]
-        }
-
         if (funcEscalar) {
             mat4.scale(matrizNormal, matrizNormal, funcEscalar(v));
         }
@@ -104,9 +98,6 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
         }
 
         var vertice = forma[Math.round(u*vertices)];
-        if (!vertice) {
-            vertice = forma[Math.round((u - 0.1)*vertices)];
-        }
         var nuevoVertice = vec3.create();
         mat3.multiply(nuevoVertice, matrizNormal, vertice);
         vec3.add(nuevoVertice, nuevoVertice, vectorModelado);
@@ -122,10 +113,10 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
 
         var pos = this.getPosicion(u, v);
 
-        if (conTapa && ((1 - v) <= 0.1 || v == 0)) {
+        if (conTapa && ((1 - v) <= Epsilon || v == 0)) {
             var a = this.getPosicion(1, 0);
             var b = this.getPosicion(1, 1);
-            if ((1 - v) <= 0.1 ) {
+            if ((1 - v) <= Epsilon ) {
                 return [a[0] - b[0], a[1] - b[1],  a[2] - b[2]];
             }
             if (v == 0) {
@@ -133,12 +124,14 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
             }
         } 
 
-        if ((1 - u) <= 0.1) {
-            var centro = this.getPosicion(u - 0.1, v);
+        if ((1 - u) <= Epsilon) {
+            var centro = this.getPosicion(u - Epsilon, v);
             var a = this.getPosicion(u, v);
-            var b = this.getPosicion(u - 0.1, v + 0.1);
-            if ((1 - v) <= 0.1) {
-                b = this.getPosicion(u - 0.1, v - 0.1);
+            var b;
+            if ((1 - v) <= Epsilon) {
+                b = this.getPosicion(u - Epsilon, v - Epsilon);
+            } else {
+                b = this.getPosicion(u - Epsilon, v + Epsilon);
             }
 
             var resta_a = [a[0] - centro[0], a[1] - centro[1], a[2] - centro[2]];
@@ -147,15 +140,20 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
             return result;
         }
 
-        var a = this.getPosicion(u + 0.1, v);
-        var b = this.getPosicion(u, v + 0.1);
-        if ((1 - v) <= 0.1) {
-            b = this.getPosicion(u, v - 0.1);
+        var a = this.getPosicion(u + Epsilon, v);
+        var b;
+        if ((1 - v) <= Epsilon) {
+            b = this.getPosicion(u, v - Epsilon);
+        } else {
+            b = this.getPosicion(u, v + Epsilon);
         }
         var resta_a = [a[0] - pos[0], a[1] - pos[1], a[2] - pos[2]];
         var resta_b = [b[0] - pos[0], b[1] - pos[1], b[2] - pos[2]];
         var result = this.productoVectorial(resta_a, resta_b);
-        return result;
+        if (!centrado) {
+            return [result[0], result[1], result[2]];
+        }
+        return [-result[0], -result[1], -result[2]];
     }
 
 
@@ -199,7 +197,7 @@ function Esfera(radio) {
         var z = coords[2];
         var norma = Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2);
         norma = Math.sqrt(norma);
-        return [z/norma, y/norma, x/norma];
+        return [-x/norma, -y/norma, -z/norma];
     }
 
     this.getCoordenadasTextura=function(u,v) {
@@ -221,9 +219,14 @@ function TuboSenoidal(amplitud_onda, longitud_onda, radio, altura){
     }
 
     this.getNormal=function(u,v){
-        var a = this.getPosicion(u + 0.0001, v);
-        var b = this.getPosicion(u, v + 0.0001);
-        return [Math.sin(2*u*Math.PI), Math.cos(2*u*Math.PI), 0]
+        var punto = this.getPosicion(u, v);
+        var x = punto[0];
+        var y = punto[1];
+        var z = punto[2];
+        var norma = Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2);
+        norma = Math.sqrt(norma);
+
+        return [-x / norma, 0, -z / norma]
     }
 
     this.getCoordenadasTextura=function(u,v){
@@ -329,24 +332,24 @@ function dibujarMalla(mallaDeTriangulos){
     
     // Se configuran los buffers que alimentaron el pipeline
     gl.bindBuffer(gl.ARRAY_BUFFER, mallaDeTriangulos.webgl_position_buffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, mallaDeTriangulos.webgl_position_buffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgramObjetos.vertexPositionAttribute, mallaDeTriangulos.webgl_position_buffer.itemSize, gl.FLOAT, false, 0, 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, mallaDeTriangulos.webgl_uvs_buffer);
-    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, mallaDeTriangulos.webgl_uvs_buffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgramObjetos.textureCoordAttribute, mallaDeTriangulos.webgl_uvs_buffer.itemSize, gl.FLOAT, false, 0, 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, mallaDeTriangulos.webgl_normal_buffer);
-    gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, mallaDeTriangulos.webgl_normal_buffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgramObjetos.vertexNormalAttribute, mallaDeTriangulos.webgl_normal_buffer.itemSize, gl.FLOAT, false, 0, 0);
        
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mallaDeTriangulos.webgl_index_buffer);
 
 
     if (modo!="wireframe"){
-        gl.uniform1i(shaderProgram.useLightingUniform,(lighting=="true"));
+        gl.uniform1i(shaderProgramObjetos.useLightingUniform,(lighting=="true"));
         gl.drawElements(gl.TRIANGLE_STRIP, mallaDeTriangulos.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
     }
     
     if (modo!="smooth") {
-        gl.uniform1i(shaderProgram.useLightingUniform,false);
+        gl.uniform1i(shaderProgramObjetos.useLightingUniform,false);
         gl.drawElements(gl.LINE_STRIP, mallaDeTriangulos.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
     }
  
