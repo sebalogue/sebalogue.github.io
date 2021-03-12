@@ -52,13 +52,13 @@
             }
 
             float Ka = 1.0;   // Ambiente
-            float Kd = 0.8;  // Difusion
+            float Kd = 0.1;  // Difusion
             float Ks = 1.0;   // Especular
 
             vec3 diffuseColor = vec3(0.3, 0.3, 0.3);
             vec3 specularColor = vec3(1.0, 1.0, 1.0);
 
-            vec3 color = Ka * uAmbientColor + Kd * lambertian * diffuseColor + Ks * specular * specularColor;
+            vec3 color = Ka * uAmbientColor + Kd * lambertian* diffuseColor + Ks * specular * specularColor;
 
             
 

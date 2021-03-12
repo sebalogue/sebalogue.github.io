@@ -28,14 +28,14 @@ class Camara {
     }
 
     aumentarZoom() {
-        if (this.zoom >= 0.01) {
-            this.zoom -= 0.01;
+        if (this.zoom >= 0.05) {
+            this.zoom -= 0.05;
         }
     }
 
     disminuirZoom() {
         if (this.zoom <= 6) {
-            this.zoom += 0.01;
+            this.zoom += 0.05;
         }
     }
 
@@ -90,7 +90,8 @@ class Camara {
         var pos = control.getPosition();
         var vectorCentro = vec3.fromValues(pos.x, pos.y, pos.z);
 
-        var vectorOjo = vec3.fromValues(-0.1 - this.zoom, 0.1, 0.1);
+        var vecZoom = vec3.fromValues(-this.zoom, 0, 0);
+        var vectorOjo = vec3.fromValues(-0.23 -0.1*this.zoom, 0.1 + 0.1*this.zoom, 0.2 + 0.1*this.zoom);
         vec3.add(vectorOjo, vectorCentro, vectorOjo);
 
         //vec3.rotateY(vectorOjo, vectorOjo, vectorCentro, control.getYaw());

@@ -17,12 +17,12 @@ class TimonDeCola {
 
         this.objeto.setColor(0.5, 0.3, 0.2);
 
-        var posTimon = [0.1, 0.15, 0.4]
+        var posTimon = [0.2, 0.15, 0.3]
         this.timonIzq = new Objeto3D();
         this.timonIzq.setColor(0.1, 0.4, 0.1);
         this.agregarTimon(this.timonIzq, posTimon);
 
-        posTimon = [0.1, -0.12, 0.4]
+        posTimon = [0.2, -0.12, 0.3]
         this.timonDer = new Objeto3D();
         this.timonDer.setColor(0.1, 0.4, 0.1);
         this.agregarTimon(this.timonDer, posTimon);

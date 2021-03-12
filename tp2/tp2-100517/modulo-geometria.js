@@ -54,7 +54,7 @@ function escalar(v) {
     return [1,1,1];
 }
 
-var Epsilon = 0.02;
+var Epsilon = 0.017;
 
 
 function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, vertices, funcEscalar = null, conTapa = false, centrado = true) {
@@ -79,7 +79,7 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
                 yMax = vertice_i[1];
             }
         }
-        var r = vec3.fromValues((xMin + xMax)/2, -(yMin + yMax)/2,  0);
+        var r = vec3.fromValues((xMin - xMax)/2, (yMin - yMax)/2,  0);
         return r;
     }
 
@@ -98,10 +98,14 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
         }
 
         var vertice = forma[Math.round(u*vertices)];
-        var nuevoVertice = vec3.create();
+        var nuevoVertice = vec3.create();  
         mat3.multiply(nuevoVertice, matrizNormal, vertice);
         vec3.add(nuevoVertice, nuevoVertice, vectorModelado);
 
+        if (!centrado) {
+            var a = vec3.fromValues(-1.5, 0.0, 0.0)
+            vec3.add(nuevoVertice, nuevoVertice, a);
+        }
         return nuevoVertice;
     }
 
@@ -114,17 +118,20 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
         var pos = this.getPosicion(u, v);
 
         if (conTapa && ((1 - v) <= Epsilon || v == 0)) {
-            var a = this.getPosicion(1, 0);
-            var b = this.getPosicion(1, 1);
+            var a = this.getPosicion(0.5, 0);
+            var b = this.getPosicion(0.5, 1);
             if ((1 - v) <= Epsilon ) {
-                return [a[0] - b[0], a[1] - b[1],  a[2] - b[2]];
+                //r =  [b[0] - a[0], b[1] - a[1],  b[2] - a[2]];
+                r = [a[0] - b[0], a[1] - b[1],  a[2] - b[2]];
+                return r;
             }
             if (v == 0) {
-                return [b[0] - a[0], b[1] - a[1],  b[2] - a[2]];
+                r = [a[0] - b[0], a[1] - b[1],  a[2] - b[2]];
+                return r;
             }
         } 
 
-        if ((1 - u) <= Epsilon) {
+        if (u + Epsilon >= 1) {
             var centro = this.getPosicion(u - Epsilon, v);
             var a = this.getPosicion(u, v);
             var b;
@@ -150,10 +157,8 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
         var resta_a = [a[0] - pos[0], a[1] - pos[1], a[2] - pos[2]];
         var resta_b = [b[0] - pos[0], b[1] - pos[1], b[2] - pos[2]];
         var result = this.productoVectorial(resta_a, resta_b);
-        if (!centrado) {
-            return [result[0], result[1], result[2]];
-        }
-        return [-result[0], -result[1], -result[2]];
+        var result = [-result[0], -result[1], -result[2]];
+        return result
     }
 
 

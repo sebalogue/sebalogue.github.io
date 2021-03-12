@@ -1,7 +1,7 @@
 class Helipuerto {
 
     constructor() {
-        this.posicion = [0.11, 0.988, -0.04];
+        this.posicion = [-0.01, 0.988, -0.04];
         this.rotacion = [0, 0, Math.PI/2];
         this.objeto3d = new Objeto3D();
     }

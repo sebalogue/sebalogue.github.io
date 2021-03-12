@@ -1,7 +1,7 @@
 class BaseHelipuerto {
 
     constructor() {
-        this.posicion = [0.11, 2.915, 0];
+        this.posicion = [-0.01, 2.915, 0];
         this.rotacion = [0, Math.PI/2, 0];
         this.objeto3d = new Objeto3D();
     }

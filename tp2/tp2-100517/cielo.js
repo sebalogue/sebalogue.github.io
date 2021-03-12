@@ -9,7 +9,7 @@ class Cielo {
     crear(listaObjetos) {
         var filas = 30;
         var columnas = 30;
-        var superficie = new Esfera(100.05);
+        var superficie = new Esfera(50.05);
 
         var mallaDeTriangulos = generarSuperficie(superficie, filas,columnas);
         this.objeto3d.setGeometria(mallaDeTriangulos);
