@@ -54,7 +54,7 @@ function escalar(v) {
     return [1,1,1];
 }
 
-var Epsilon = 0.017;
+var Epsilon = 0.07;
 
 
 function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, vertices, funcEscalar = null, conTapa = false, centrado = true) {
@@ -69,17 +69,17 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
             if (vertice_i[0] < xMin) {
                 xMin = vertice_i[0];
             }
-            if (vertice_i[0] > xMin) {
+            if (vertice_i[0] > xMax) {
                 xMax = vertice_i[0];
             }
-            if (vertice_i[1] < xMin) { 
+            if (vertice_i[1] < yMin) { 
                 yMin = vertice_i[1];
             }
-            if (vertice_i[1] > xMin) {
+            if (vertice_i[1] > yMax) {
                 yMax = vertice_i[1];
             }
         }
-        var r = vec3.fromValues((xMin - xMax)/2, (yMin - yMax)/2,  0);
+        var r = vec3.fromValues((xMin + xMax)/2.0, (yMin + yMax)/2.0,  0);
         return r;
     }
 
@@ -91,8 +91,13 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
             mat4.scale(matrizNormal, matrizNormal, funcEscalar(v));
         }
 
-        if (conTapa && (v == 0 || v == 1)) {
+        if (conTapa && ((v == 1) || (v == 0))) {
             var vPromedio = this.verticePromedio();
+
+            //var nuevoVertice = vec3.create();  
+            //mat3.multiply(nuevoVertice, matrizNormal, vPromedio);
+            //vec3.add(nuevoVertice, nuevoVertice, vectorModelado);
+
             vec3.add(vPromedio, vPromedio, vectorModelado);
             return vPromedio;
         }
@@ -101,11 +106,6 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
         var nuevoVertice = vec3.create();  
         mat3.multiply(nuevoVertice, matrizNormal, vertice);
         vec3.add(nuevoVertice, nuevoVertice, vectorModelado);
-
-        if (!centrado) {
-            var a = vec3.fromValues(-1.5, 0.0, 0.0)
-            vec3.add(nuevoVertice, nuevoVertice, a);
-        }
         return nuevoVertice;
     }
 
@@ -113,7 +113,7 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
         return [a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2], a[0]*b[1] - a[1]*b[0]];
     }
 
-    this.getNormal = function(u,v) {
+    /*this.getNormal = function(u,v) {
 
         var pos = this.getPosicion(u, v);
 
@@ -158,7 +158,76 @@ function SuperficieBarrido(forma, matricesModelado, matricesNormales, niveles, v
         var resta_b = [b[0] - pos[0], b[1] - pos[1], b[2] - pos[2]];
         var result = this.productoVectorial(resta_a, resta_b);
         var result = [-result[0], -result[1], -result[2]];
+        if (!centrado) {
+            result = [result[0], result[1], result[2]];
+        }
         return result
+    }*/
+    this.getNormal=function(u,v){
+        var centro = this.getPosicion(u, v);
+        vec3.negate(centro, centro);
+
+        var masU;
+        var masV;
+        var menosU;
+        var menosV;
+
+        if (conTapa) {
+            var a = this.getPosicion(0.5, 0);
+            var b = this.getPosicion(0.5, 1);
+            if (v + Epsilon >= 1) {
+                r = [a[0] - b[0], a[1] - b[1],  a[2] - b[2]];
+                return r;
+            }
+            if (v - Epsilon <= 0) {
+                r =  [b[0] - a[0], b[1] - a[1],  b[2] - a[2]];
+                return r;
+            }
+        }
+
+        var vectores = [];
+
+        if (u + Epsilon <= 1){
+            masU = this.getPosicion(u + Epsilon, v);
+            vec3.add(masU, masU, centro);
+            vectores.push(masU);
+        }
+        if (v + Epsilon <= 1){
+            masV = this.getPosicion(u, v + Epsilon);  
+            vec3.add(masV, masV, centro);
+            vectores.push(masV);
+        }
+        if (u - Epsilon >= 0){
+            menosU = this.getPosicion(u - Epsilon, v);  
+            vec3.add(menosU, menosU, centro);
+            vectores.push(menosU);
+        }
+        if (v - Epsilon >= 0){
+            menosV = this.getPosicion(u, v - Epsilon);
+            vec3.add(menosV, menosV, centro);
+            vectores.push(menosV);
+        }
+
+        var normales = [];
+
+
+        for (var i = 0; i < vectores.length - 1; i++){
+            var aux = vec3.create();
+            vec3.cross(aux, vectores[i], vectores[i + 1]);
+            normales.push(aux);
+        }
+
+        var result = vec3.create();
+
+        for (var j = 0; j < normales.length; j++){
+            vec3.add(result, result, normales[j]);
+        }
+
+        vec3.scale(result, result, -1 / normales.length);
+        if (!centrado) {
+            vec3.scale(result, result, -1);
+        }
+        return result;
     }
 
 
@@ -177,7 +246,7 @@ function Plano(ancho,largo){
     }
 
     this.getNormal=function(u,v){
-        return [0,1,0];
+        return [0,-1,0];
     }
 
     this.getCoordenadasTextura=function(u,v){

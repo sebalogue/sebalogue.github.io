@@ -25,7 +25,8 @@ class Helipuerto {
             [0, 0, 0],
             [0.2, 0, 0],
             [0.3, 0, 0],
-            [2.1, 0, 0]
+            [1.967, 0, 0],
+            [1.967, 0, 0],
         ]
         var forma = new CurvaBezier(puntosForma);
 
@@ -37,12 +38,13 @@ class Helipuerto {
                                       filas, 
                                       columnas,
                                       null,
-                                      true);
+                                      true,
+                                      false);
 
         var mallaDeTriangulosDelHelicotero = generarSuperficie(superficie, filas,columnas);
         this.objeto3d.setGeometria(mallaDeTriangulosDelHelicotero);
 
-        this.objeto3d.setColor(0.7, 0.7, 0.7);
+        this.objeto3d.setColor(0.1, 0.1, 0.1);
         this.objeto3d.setPosicion(this.posicion[0], this.posicion[1], this.posicion[2]);
         this.objeto3d.setRotacion(this.rotacion[0], this.rotacion[1], this.rotacion[2]);
         this.objeto3d.setEscala(1, 0.2, 0.2);

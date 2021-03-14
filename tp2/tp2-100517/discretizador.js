@@ -90,7 +90,7 @@ class CurvaBezier {
 
 	normal(t) {
 		var punto1 = this.tangente(t);
-		var punto2 = this.tangente(t + 0.01);
+		var punto2 = this.tangente(t + 0.1);
 		var aux = this.prodVectorial(punto1, punto2);
 		
 		var result = this.prodVectorialNormal(aux, punto1);
@@ -119,7 +119,7 @@ class CurvaBezier {
 		var x = sum[0];
         var y = sum[1];
         var z = sum[2];
-		var norm = Math.sqrt([x,y,z].flatMap(x=>Math.pow(x,2)).reduce((a,b) => a+b, 0));
+		var norm = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
 		norm = norm == 0 ? 1 : norm;
 		return [x/norm, y/norm, z/norm];
 	}

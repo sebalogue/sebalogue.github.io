@@ -28,7 +28,7 @@ class Camara {
     }
 
     aumentarZoom() {
-        if (this.zoom >= 0.05) {
+        if (this.zoom >= -10.05) {
             this.zoom -= 0.05;
         }
     }

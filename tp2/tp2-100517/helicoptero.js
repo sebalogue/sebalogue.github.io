@@ -12,9 +12,31 @@ class Helicoptero {
 		var filas = 30;
 		var columnas = 30;
 
-		var puntosForma = [[1.3,0.6, 0], [0,0.39, 0], [0,0,0], [1.3, 0, 0], [2.7, 0, 0], [2.5, 0.9, 0], [1.3,0.6,0]];
-        var puntosRecorrido = [[0,0,0.0], [0,0,0.1], [0, 0, 0.3], [0,0,0.3]];
+		//var puntosForma = [[1.3,0.6, 0], [0,0.39, 0], [0,0,0], [1.3, 0, 0], [2.7, 0, 0], [2.5, 0.9, 0], [1.3,0.6,0]];
+        var puntosRecorrido = [ [0, 0, 0.1], [0,0,0.2], [0, 0, 0.3], [0,0,0.35]];
 
+        var puntosForma = [
+                               [-0.15, -0.045, 0],
+                                [-0.184, 0.0396, 0],
+                                [0.063, 0.07137, 0],
+                                [0.1, 0.045, 0],
+
+                                [0.1, 0.045, 0],
+                                [0.192, -0.06705, 0],
+                                [-0.121, -0.12267, 0],
+                                [-0.15, -0.045, 0]
+                             ]
+        for (var i = 0; i < puntosRecorrido.length; i++) {
+            for (var j = 0; j < 3; j++) {
+                puntosRecorrido[i][j] *= 1;
+            }
+        }
+
+        for (var i = 0; i < puntosForma.length; i++) {
+            for (var j = 0; j < 3; j++) {
+                puntosForma[i][j] *= 5;
+            }
+        }
 
 		var forma = new CurvaBezier(puntosForma);
 
@@ -27,7 +49,7 @@ class Helicoptero {
                                       columnas,
                                       null,
                                       true,
-                                      false);
+                                      true);
 
 		var mallaDeTriangulosDelHelicotero = generarSuperficie(superficie, filas,columnas);
         this.objeto3d.setGeometria(mallaDeTriangulosDelHelicotero);
@@ -45,26 +67,26 @@ class Helicoptero {
 
         //brazos helices:
         var rot = [Math.PI/2, 0, 0];
-        var pos = [1.6 - 1.5, -0.2, 0.45];
+        var pos = [1.6 - 1.5, -0.2 + 0.38, 0.45 + 0.07];
         var posHelices =  [0, 0.3, 0];
         var brazoHeliceIzq = new BrazoHelice(this.objeto3d, pos, rot, posHelices);
         //this.hijos.push(brazoHeliceIzq);
         this.helices.push(brazoHeliceIzq);
 
-        pos = [1.6 - 1.5, -0.2, -0.15];
+        pos = [1.6 - 1.5, -0.2 + 0.38, -0.15 + 0.07];
         posHelices =  [0, -0.3, 0];
         var rotCirculo = [0, 0, Math.PI];
         var brazoHeliceDer = new BrazoHelice(this.objeto3d, pos, rot, posHelices, rotCirculo);
         //this.hijos.push(brazoHeliceDer);
         this.helices.push(brazoHeliceDer);
 
-        pos = [1.0 - 1.5, -0.16, 0.45];
+        pos = [1.0 - 1.5, -0.16 + 0.38, 0.45 + 0.07];
         var posHelices =  [0, 0.3, 0];
         var brazoHeliceIzqTrasero = new BrazoHelice(this.objeto3d, pos, rot, posHelices);
         //this.hijos.push(brazoHeliceIzqTrasero);
         this.helices.push(brazoHeliceIzqTrasero);
 
-        pos = [1.0 - 1.5, -0.16, -0.15];
+        pos = [1.0 - 1.5, -0.16 + 0.38, -0.15 + 0.07];
         posHelices =  [0, -0.3, 0];
         var rotCirculo = [0, 0, Math.PI];
         var brazoHeliceDerTrasero = new BrazoHelice(this.objeto3d, pos, rot, posHelices, rotCirculo);
@@ -73,28 +95,28 @@ class Helicoptero {
 
         // cola:
 		rot = [0, 0, Math.PI*0.45];
-        pos = [0.2 - 1.5, -0.2, 0.1];
+        pos = [-1.0, -0.2 + 0.38, 0.1 + 0.07];
         var colaIzq = new ColaHelicoptero(this.objeto3d, pos, rot);
         this.hijos.push(colaIzq);
 
         //rot = [0, 0, Math.PI*0.45];
-        pos = [0.2 - 1.5, -0.2, 0.2];
+        pos = [-1.0, -0.2 + 0.38, 0.2 + 0.07];
         var colaDer = new ColaHelicoptero(this.objeto3d, pos, rot);
         this.hijos.push(colaDer);
 
         var rot = [Math.PI/2, 0, 0];
-        var pos = [-0.18 - 1.5, -0.15, 0.15];
+        var pos = [-1.35, -0.15 + 0.38, 0.15 + 0.07];
         this.timon = new TimonDeCola(this.objeto3d, pos, rot);
         this.hijos.push(this.timon);
 
         //patas
         var rot = [Math.PI/7, 0, 0];
-        var pos = [1.5 - 1.5, -0.75, -0.055];
+        var pos = [1.5 - 1.5, -0.65 + 0.38, -0.01 + 0.07];
         var pataDerecha = new PatasHelicoptero(this.objeto3d, pos, rot);
         this.hijos.push(pataDerecha);
 
         var rot = [-Math.PI/7, 0, 0];
-        var pos = [1.5 - 1.5, -0.75, 0.35];
+        var pos = [1.5 - 1.5, -0.65 + 0.38, 0.30 + 0.07];
         var pataIzquierda = new PatasHelicoptero(this.objeto3d, pos, rot);
         this.hijos.push(pataIzquierda);
 
